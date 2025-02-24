@@ -1,0 +1,635 @@
+---
+layout: post
+title:  "Castle of the Damned"
+date:   2025-02-24 12:06:00 -0800
+categories: game-dev game-design autodidact
+---
+
+# Castle of the Damned
+This is a personal project of mine, where I am trying to learn game design and development.
+
+## Target Audience: 
+Players seeking challenging gameplay with intricate combat mechanics and an engaging exploration experience.
+
+## Design Pillars
+The design pillars are:
+
+- Complex combat from simple moves
+  - a uniform, simple set of moves with small iterations across builds can be strung together into complex combat that represents the player's style.
+- Character building is exploration
+  - designing and trying new builds is as important as combat, exploration and the story
+  - redesign is encouraged, not punished
+- Every enemy matters
+  - every guard in every hallway could kill you
+- Tension through gradual convergence
+  - player, and antagonist, resource decline gradually, not immediately
+  - antagonists can be combat or non-combat (distance to checkpoint)
+  - the state of decline is observable to the player
+  - comebacks are possible
+- Every find is useful
+  - no weapons or items that cannot be used based on your current state
+  - no low-power unimportant items
+
+## Core Gameplay Loop: 
+The primary gameplay loop revolves around navigating the castle, engaging in combat encounters with various foes, discovering tomes and manuscripts that enhance the player's abilities, and solving puzzles that facilitate progress.
+
+## Unique Selling Points:
+1. Randomized path routes within the hand-crafted castle, ensuring a fresh sense of exploration and discovery in each playthrough.
+2. Concise playthroughs compared to traditional full-length games, promoting replayability with diverse builds and navigation routes.
+3. A combat system that merges the Gothic RPG atmosphere of Dark Souls with the streamlined and consistent mechanics of Super Smash Brothers.
+4. A character progression system that includes allocating Essence to various attributes, experimenting with weapon and armor choices, and finding hidden bonuses through matching armor sets.
+
+## Differentiators
+For the purpose of differentiation I will focus on Elden Ring as it is the most modern souls-like game, and I believe that the souls-like genre will be the most closely related.
+
+There are only a few weapons.
+Every weapon is good.
+All new items, of any type, can be used; There is no stat requirement on items.
+Characters start at max level and earn the ability to modify their builds, but not to strictly upgrade them.
+
+When tuning enemy and level difficulty the primary focus is on providing the user fun through the _prolonged observation of two numbers approaching zero_: one represents them (their health, mana, etc), the other represents their opposing force (the current boss, the distance to the next checkpoint):
+ - Elden Ring: many boss fights see the player's health reduce by 70% or more with a single hit, providing a _sudden and massive_ drop in the player's number.
+ - Castle of the Damned: boss fights will be tuned to consistently, though slowly, wear down the user's number.
+ - Elden Ring: the next checkpoint is found by accident
+ - Castle of the Damned: the player should always be able to check their approximate distance to the next checkpoint, even if they do not know the route there.
+
+The goal is to provide the player with the feeling of wondering if they will or won't make it, of cutting it close, of pulling off a comeback, and to stretch this feeling so that the player is a) never surprised when they are reduced to zero, and b) pleased to be released from the pressure built up over time when they do triumph.
+
+## Core Gameplay Loop
+
+The core gameplay loop consists of the following actions:
+
+1. Explore the castle, discover new locations, and uncover hidden secrets.
+2. Engage in combat with enemies and bosses, utilizing evasive maneuvers, defensive actions, and strategic attacks.
+3. Acquire new weapons, armor, items, and abilities to enhance your character.
+4. Manage your character's resources and allocate stat points to optimize your playstyle.
+5. Progress through the story by completing quests and interacting with NPCs.
+
+## Main Character
+### Stats
+Character stats help define a player's abilities and playstyle. Players can allocate Essence (ES) points to various stats, including Hit Points (HP), Life Force (LF), Energy (EG), Stability (SB), and Inertia (IA). Players also have Mental Focus (MF) as a resource to spend on learning Tomes or Manuscripts.
+
+- **Hit Points (HP)**: A measure of a player's health. HP is depleted when a player is attacked and can be restored by using healing abilities or consumable potions. If a player's HP reaches 0, they die and respawn at the entrance to the current area, corrupted.
+- **Life Force (LF)**: A measure of a player's magical energy. LF is depleted when a player uses abilities (spells or artes) and can be restored by killing enemies or using consumable potions. If a player's LF reaches 0, they die and respawn at the entrance to the current area, corrupted. Can be overcharged to allow for more powerful abilities.
+- **Stability (SB)**: A resource that is reduced when successfully clashing attacks. The amount of SB consumed depends on the strength (damage it would do) of the attack being clashed.
+- **Inertia (IA)**: Influences the amount of end-lag an action has, how much of that is cancellable, how much Directional Influence (DI) can be used during the action, and how much super-armor the action has. IA starts at a medium amount and can be increased or decreased by spending Essence (ES).
+- **Essence (ES)**: Allocated between HP, LF, P, SB, and IA. Players can spend ES to increase or decrease these stats, tailoring their character's abilities to their preferred playstyle.
+- **Mental Focus (MF)**: A resource automatically consumed when a player learns either learn a Tome or learn a Manuscript. On consumption it is allocated to either the MFSP stat (for tomes) or MFWP (for manuscripts). Remaining MF positively modifies standard attacks, MFSP positively modifies magic attacks and negatively modifies martial artes, and MFWP vice versa.
+- **Pulse Max (PM)**: The maximum pulse rate a player's pulse can have. The closer the current pulse is to the PM the slower the action. The further the current pulse is from the PM the faster the action. The PM can be increased by spending Essence (ES). Actions taken and damage recieved increase the pulse rate, time passing decreases the pulse rate.
+
+#### Life Force (LF)
+Life force, LF, is a measure of a player’s magical energy. LF is depleted when a player uses abilities, and can be restored by killing enemies or using consumable potions. When LF reaches 0 the player dies.
+
+Killing enemies restores LF if they are killed in quick succession. Available LF can reach an over-charged state, allowing the player to use abilities that cost more than their maximum LF. Over-charged LF decays quickly over time.
+
+LF can be used to restore HP via healing spells. Healing spells are inefficient, and the amount of HP restored in this way is always less than the amount of LF spent on the ability. 
+
+The LF required for a healing spell is  more than the maximum LF a player has, requiring LF over-charging to be used.  HP can also be restored via consumable potions.
+
+#### Inertia (IA)
+Inertia controls how much a player can move, or be moved, during an action. High inertia means that a player is less likely to be interrupted during an action -- achieved through super-armor -- but they are also less able to apply mid-action directional influence. Low inertia means that a player is more likely to be interrupted during an action, but they are also more able to apply mid-action directional influence.
+
+Player stats, weapons, and attacks all have inertia values. These values are combined to determine the final inertia value for a given action. The final inertia value determines the amount of super-armor available during an action, the amount of directional influence available during an action, and the amount of time that an action can be cancelled during the follow-through. 
+
+There is no damage bonus for using a high inertia build, but weapons with high inertia do have a higher base damage value.
+
+Armor with higher inertia values also have higher base defense values.
+
+#### Leveling Up
+Throughout the game, players have the opportunity to refine their character builds by finding special consumable items known as Essence Chunks (ES Chunks). These can be discovered in the environment, obtained by trading in other items like Spell Tomes, Martial Manuscripts, or Shapeless Keys, or acquired by selling items to NPCs. They are also rare rewards for defeating particularly challenging enemies, and can be found in hidden chests or dropped by bosses.
+
+An ES Chunk can be held in the player's inventory and pre-allocated to increase a particular stat: Hit Points (HP), Life Force (LF), Energy (EG), Stability (SB), or Inertia (IA). This is visually indicated by the ES Chunk glowing a distinct colour corresponding to the chosen stat, allowing players to identify their allocation at a glance during combat. If no pre-allocation has been made, holding down the consume button will bring up a wheel interface, prompting the player to select a stat.
+
+When an ES Chunk is consumed, it permanently increases the selected stat and also provides a temporary boost related to that stat. For instance, allocating to HP might give a full health refill and a temporary increase in maximum health, or allocating to EG could provide a brief period of increased action speed. These bonuses do not stack; consuming another ES Chunk while a bonus is active will replace the previous bonus with the new one.
+
+At any Cleansing Altar, players can fully reallocate their Essence (ES) without restriction, granting the freedom to experiment with different character builds. The ES pre-allocated to the chunks in the inventory, however, is not affected by this process and remains assigned until the chunk is consumed or manually changed by the player.
+
+This system allows players to adapt their character's strengths on the fly, adding an additional layer of tactical depth to the combat and exploration mechanics. The introduction of temporary boosts also provides strategic incentives for choosing when to consume an ES Chunk, with the potential to turn the tide of a difficult battle or overcome a challenging obstacle.
+
+- **Hit Points (HP)**: Consuming an ES Chunk allocated to HP instantly refills the player's health and temporarily increases their maximum health for increased durability.
+
+- **Life Force (LF)**: Using an ES Chunk allocated to LF not only refills the player's magical energy instantly but also drastically reduces the LF cost of spells and martial artes for a short time. This allows for rapid use of abilities during this period.
+
+- **Energy (EG)**: An ES Chunk allocated to EG increases the speed of the player's actions temporarily, making their movements and reactions quicker and harder for enemies to counter.
+
+- **Stability (SB)**: Consuming an ES Chunk allocated to SB grants a temporary increase in stability, reducing the SB cost of clashing and decreasing damage taken while clashing. This enables the player to better endure a flurry of enemy attacks and defend more effectively against incoming damage.
+
+- **Inertia (IA) - Increase**: Consuming an ES Chunk allocated to increase IA provides a temporary boost to damage output and super armor, enhancing resistance to stagger and improving attack strength.
+
+- **Inertia (IA) - Decrease**: Using an ES Chunk to decrease IA could grant a temporary increase in the amount of an action that can be cancelled (e.g., more frames of an attack can be cancelled into a dodge or clash). This enhances the player's ability to adapt mid-action and respond to changing battle conditions.
+
+## Combat Mechanics
+The combat system blends elements from the Dark Souls series with aspects from the Super Smash Bros series, along with a few original features. The goal is to achieve a combat style that carries the weight, impact, and slow pace of Souls with the responsiveness and simplicity of actions in Smash. 
+
+**Influences from Souls:**
+
+1. **Weightiness of Actions:** The combat system mirrors the "weightiness" of Souls games by making each action deliberate and consequential. This is achieved by extending the "lead-in" phase of attacks and limiting the ability to cancel actions once initiated.
+2. **Pulse System:** The Pulse system (EG) influences the speed of actions, akin to the stamina system in Souls games. As current value approach user's max Pulse actions become slower. A UI indicator of the current waveform and the max waveform will be displayed to the player.
+
+**Influences from Smash:**
+
+1. **Immediate Action Response:** Immediate snapping to the start of an animation after an action input, a common feature in Smash, ensures high perceived responsiveness. 
+2. **Simple Actions:** The system adopts the universal control scheme of Smash where every character has the same base actions, and these actions can be modified with directional influence. Each weapon category has different animations for each of the nine attacks, but the fundamental actions remain the same, allowing players to understand and master the combat system more intuitively.
+
+**Unique Features:**
+
+1. **Directional Influence (DI):** An inertia modifier (IA) affects DI, which determines how much you can adjust your trajectory during an attack. 
+2. **Pulse System:** The pulse system influences the damange received, damage dealt, and speed of actions in combat.
+3. **Combat Phases:** Each combat action is divided into four phases: stand-by, lead-in, attack, and follow-through. Immediate snapping to the start of an animation after input ensures high perceived responsiveness, and extended lead-in and follow-through phases help retain the weightiness of actions.
+
+**Visual & Auditory Feedback:**
+
+The game will borrow visual and auditory feedback mechanisms from both Souls and Smash to make the combat satisfying and intuitive. This includes things like hit-pause, visuals of the hit connecting, and sounds. 
+
+**Animation Blending:**
+
+The system will have limited animation blending, primarily during stand-by and the cancellable frames of follow-through. While it may sacrifice some realism, this design choice emphasizes clear visual feedback and aids responsiveness, thus achieving the game's desired combat feel.
+
+Your combat system, therefore, combines the responsive and universal control scheme of Smash with the deliberate, impactful mechanics of Souls, all while introducing unique mechanics that contribute to creating a combat style that is both weighty and highly responsive. Testing will play a crucial role in fine-tuning these mechanics to ensure the desired gameplay experience is achieved.
+
+### Pulse System
+The Pulse system is a cornerstone of the combat mechanics in "Castle of the Damned," blending traditional stamina systems with a dynamic waveform that updates in real-time based on character actions. This system ensures that each character's,and enemies', physical state is accurately reflected during combat, influencing both offensive and defensive capabilities.
+Damage received is scaled based on the defender's pulse. The further the pulse is from the mid-point of the waveform, the more damage the defender receives. 
+
+The pulse also influences the speed of actions, with closer frequencies resulting in slower actions, simulating fatigue. A higher maximum pulse allows for more actions-per-second, but the shape of the pulse at higher frequencies is manipulated so that the wave spends more time at the peak and trough, and less time at the mid-point. This means that the player will have access to more damage-per-second, but will take more damage when hit.
+
+This system is also intended to allow a build that focuses on damage bonuses typically achieved through random criticals and parry/riposte/stagger mechanices. Instead of stagger, the player can build their character with a spice that will reveal enemy pulse, allowing them to time their attacks for maximum damage. 
+
+#### Example Waveforms:
+Legend:
+- 7: mid-point of the waveform, reduced damage
+- 1: peak, maximum damage
+- 13: trough, max damage
+
+```
+Pulse Waveform, standard
+            |---------------------------------------- High damage taken
+       /--------\
++------|--------|----------------------------+
+1      |   **   |                            |
+2      |**    **|                            |
+3    **|        |**                          |
+4   *  |        |  *                         |
+5  *   |        |   *                        |
+6 *    |        |    *                       |
+7*=====|========|=====*======|========|=====*|
+8                      *     |        |    * |
+9                       *    |        |   *  |
+10                       *   |        |  *   |
+11                        ** |        |**    |
+12                           |**    **|      |
+13                           |   **   |      |
++----------------------------|--------|------+
+
+There are fewer ticks within the high-damage area in the standard wave.
+```
+
+```
+Pulse Waveform, after increasing max pulse with a spice.
+
++----|------------|-------------------------+
+1    |    ****    |                         |
+2    |***      ***|                         |
+3   *|            |*                        |
+4  * |            | *                       |
+5 *  |            |  *                      |
+6 *  |            |  *                      |
+7*===|============|===*===|============|===*|
+8                      *  |            |  * |
+9                      *  |            |  * |
+10                      * |            | *  |
+11                       *|            |*   |
+12                        |***      ***|    |
+13                        |    ****    |    |
++-------------------------|------------|----+
+
+There are more ticks within the high-damage area than not.
+```
+
+```
+Waveform after being hit by an attack, against the standard waveform.
+*: the standard waveform
++: the waveform after being hit by an attack
+#: where they intersect
+
++--------------------------------------------+
+1     ++   **               ++               |
+2    +  #*    **           +  +              |
+3   +**  +       **       +    +             |
+4  +*     +        *     +      +            |
+5 +*       +        *    +      +            |
+6 #        +         *  +        +           |
+7*==========+=========*+==========+=========*|
+8            +        +*           +       *+|
+9            +        + *           +     * +|
+10            +      +   *          +    * + |
+11             +    +     **         + ** +  |
+12              +  +          **    **+  +   |
+13               ++              **    ++    |
++--------------------------------------------+
+
+Taking damage has increased the frequency. The player will be slower to act because there is less difference between the current pulse and their max pulse.
+```
+
+#### Dynamic Waveform Calculation:
+
+The waveform is calculated continuously using a simple sine function, adapting to actions such as attacks and evasions. This calculation influences two major aspects of combat:
+ - **Damage Received:** The current value of the defender's pulse determines the scaling of incoming damage. The higher the distance from the mid-point of the waveform, the more damage the defender receives.
+ - **Action Responsiveness:** The proximity of the current frequency to the character's maximum frequency dictates the speed of their actions. Closer frequencies result in slower actions, simulating fatigue.
+
+### Evasive Maneuvers
+Evasive maneuvers are actions that allow players to avoid incoming attacks and to reposition themselves. Evasive maneuvers are performed by pressing the evade button and inputting a direction. The direction that the player inputs determines the direction that the player will evade in.
+
+Evasive maneuvers do not have i-frames, but they do have super-armor, allowing the player to be hit without being interrupted during the dodge. The idea is to encourage behavior where the dodge is used when the player has time, and the clash is used as the best last-minute-panic option. Evasive maneuvers have a longer start-up animation and a short follow-through, making players rely on blocks if they don't have enough time to start the dodge. This design choice supports a combat system that rewards strategic use of dodges and clashs.
+
+For evading attacks with i-frames, the player must use the Shadow Leap spell.
+
+### Defensive Actions (Clashing)
+Clash is a defensive technique that allows players to actively counter incoming attacks without inflicting damage on the enemy. During an enemy's attack, players can initiate a Clash by striking the enemy's weapon with their own. However, not all parts of the player's weapon can Clash - only strikes from the hilt to the mid-blade have this property, whereas strikes from the tip of the weapon will only deal damage.
+
+Timing and positioning are crucial. The player's weapon must make contact with the enemy's weapon before it hits the player's body, and this contact must occur on the hilt or mid-blade section of the player's weapon. Successfully executing a Clash negates the enemy's attack, preventing any damage to the player.
+
+A misjudged or mistimed Clash, or an attempted Clash with the tip of the weapon, leaves the player vulnerable to the full impact of the enemy's attack. This technique encourages a proactive defense, rewarding careful timing and precision over passive blocking, while adding an extra layer of complexity to ensure that Clashes do not occur accidentally during aggressive play.
+
+The success level of a clash determines how much incoming damage and pulse-increase is prevented:
+
+1. Success Level 0-50%: The amount of damage blocked and pulse-increase prevented is greater than the success level.
+2. Success Level 50-80%: The amount of damage blocked and pulse-increase prevented is equal to the success level.
+3. Success Level 80-90%: The amount of damage blocked and pulse-increase prevented is 80%.
+4. Success Level 90-100%: The amount of damage blocked and pulse-increase prevented is 90%.
+5. Success Level 100%: The amount of damage blocked and pulse-increase prevented is 100%.
+
+Clashs consume some of the defender's Stability (SB), proportional to the success level of the clash.
+
+If both a player and an enemy execute a clash simultaneously, the result is that both parties suffer the same outcomes, blocking part of the damage, consuming SB, and building up pulse-increase based on their respective success levels.
+
+Importantly, if a player initiates a clash too early, such that their attack lands before the enemy's attack is executed, the player's action is considered a normal attack rather than a clash. This could leave the player vulnerable to a clash from the enemy, depending on the timing and inertia of the enemy's attack. 
+
+Thus, the clash system encourages precise timing, reading of enemy movements, and strategic decision-making. Players are rewarded for successfully predicting and countering enemy attacks, while premature or misjudged clashs can leave them open to damage and pulse-increase.
+
+#### Total Inertia and Clashs
+Total Inertia (IA) is a crucial element of the clash system. It encompasses several factors, including the weapon's IA, the specific attack's IA, the player's base IA, and the IA from their armor. All of these factors combine to form a comprehensive representation of the 'weight' or 'momentum' a player has in combat, significantly influencing attack and clash dynamics. This total inertia approach adds strategic depth to combat by diversifying the gameplay dynamics based on weapon, armor, and character choices.
+
+The combined IA value from all these factors influences the 'window of opportunity' for a successful clash. A higher total IA results in slower swings, creating a larger window for an enemy to react with a clash. On the other hand, a lower total IA results in faster swings, making it harder for enemies to time a clash effectively. 
+
+The total IA also affects the outcome of a clash. If the defender's total IA is higher than the attacker's, their clash can block a larger portion of damage and stagger, up to 100%. However, if the defender's total IA is lower than the attacker's, their clash may be less effective in blocking damage and stagger. This aspect emphasizes the importance of understanding and managing one's total IA, making weapon and armor choices, as well as understanding your character's abilities, all the more crucial.
+
+In simultaneous clashs, the total IA of the respective combatants comes into play. The party with the higher total IA will block a higher percentage of damage and stagger. If both parties have equal total IA, they will experience matching outcomes of both preventing partial damage, taking partial stagger, etc.
+
+Lastly, the total IA can potentially influence vulnerability when a player initiates a clash too early. A clash initiated with a high total IA that misses the window of opportunity for a successful clash will take longer to recover, giving the enemy a larger window to clash in return.
+
+In sum, the Total Inertia system introduces significant strategic considerations to the combat dynamics. It elevates the importance of weapon and armor choice, timing, player ability understanding, and prediction of enemy movements for successful engagement.
+
+### Perceived Responsiveness
+Perceived responsiveness is a critical aspect of Castle of the Damned - actions in Super Smash Bros. are immediate and snappy, while actions in Dark Souls are weighty and deliberate. The goal is to strike a combination these two styles, creating a combat system that feels both responsive and impactful. 
+
+This is achieved through a combination of immediate snapping to the Lead-in phase of an animation, and lack of animation blending and cancel-frames.
+
+
+### Movement and Positioning (Aim Mode and Strafe)
+#### Aim Mode
+Upon unsheathing their weapon, the player character shifts into Aim-mode and the camera changes to a gyro-assisted mode. In this mode, the character moves in strafes and backsteps rather than turning around, maintaining a consistent forward-facing orientation.
+
+Additionally, players can toggle a "lock direction" feature which locks the camera to a specific direction relative to the world (e.g., North, South, East, West), rather than a specific enemy. This means that the camera will strive to maintain a view of the area in the direction initially faced by the player when the lock was activated.
+
+When moving backwards, the camera pulls back to maintain its point of view. Likewise, when strafing, the camera moves laterally to keep the locked direction within view. This allows players to concentrate on their positioning and attack timing, without worrying about constantly adjusting the camera's position.
+
+Upon landing a successful hit,clashing with an enemy, or being hit, players can quickly press a designated button (e.g., the center-pad) to immediately reorient the camera's locked direction to focus on the area currently occupied by the attacked enemy. This mechanic, known as "dynamic camera refocus," allows for fluid adjustments in the heat of combat, enhancing the player's situational awareness without the need for manual camera control.
+
+This way, even during a complex fight where the player and enemy are constantly moving, the player can update their locked direction to stay focused on the evolving battlefield. It allows for fast-paced action while maintaining the deliberate, player-controlled combat style you're aiming for.
+This system preserves the strategic and skill-based nature of combat while providing some level of automated camera assistance for a smoother combat experience.
+
+#### Strafe
+Players can strafe left and right by entering Aim Mode and moving the left stick left or right.
+
+#### Jumping
+The jumping system is designed to be easily understood, easy to execute, and limited in effectiveness. 
+Its primary goal is to encourage exploration and navigation, rather than being a dominant combat mechanic. 
+Jump has a dedicated button for ease of execution. 
+
+The system has the following features:
+
+1. **Horizontal Emphasis:** The jumping system focuses mainly on horizontal jumps, allowing players to clear gaps and traverse chasms, while vertical jumps are restricted. This design choice emphasizes exploration and navigation, rather than enabling players to reach high platforms easily.
+2. **Limited Verticality:** Vertical jumping is limited to prevent players from reaching elevated areas quickly, which promotes exploration and discovery. Players will need to find alternate routes to reach higher platforms, encouraging them to thoroughly explore the level.
+3. **No Aerial Attacks:** This system does not allow for any attacks while in the air, ensuring that jumping remains separate from the combat mechanics. By restricting aerial attacks, players will focus on mastering grounded combat and using the jumping system primarily for exploration and platforming purposes.
+4. **Environmental Interaction:** The jumping system allows for interactions with the environment, such as jumping over gaps or catching ledges when not raining. These interactions encourage players to consider their surroundings and use the jumping mechanic strategically.
+
+### Attacking (Standard Attacks and Weapon Attributes)
+#### Standard Attacks
+Each character has a set of standard attacks available. They are the same for all weapons, but the damage and effects may vary depending on the weapon used. Standard attacks are the most basic form of combat and are available to all characters regardless of their class or level.
+
+- **Thrust**: A quick, forward thrust with the weapon.
+- **Slash**: A horizontal slash with the weapon.
+- **Chop**: An overhead swing with the weapon.
+- **Thrust, heavy**: A slower, more powerful thrust with the weapon.
+- **Slash, heavy**: A slower, more powerful horizontal slash with the weapon.
+- **Chop, heavy**: A slower, more powerful overhead swing with the weapon.
+- **Thrust, running**: A quick, forward thrust with the weapon while running.
+- **Slash, running**: A horizontal slash with the weapon while running.
+- **Chop, running**: An overhead swing with the weapon while running.
+
+##### Altered Standard Attacks
+The player can find altered versions of standard attacks and choose to replace their current standard attack with an altered version. The alterations typically either increase damage or ease of clash at the cost of the other.
+
+Altered attacks are learned from Fabric Scraps left by previous warriors who ventured into the castle. As each visitor brought their own fighting style, these remnants carry the essence of their unique techniques. The altered attacks all follow a pattern of providing 1 version that is higher damaging but harder to clash, and 1 version that is easier to clash but lower damaging. Generally, to make a weapon better at Clash we increase the amount of the hitboxes on the blade that can clash and alter the weapon's trajectory slightly such that it is more likely to intercept an incoming attack. To make a weapon better at Damage we decrease the amount of hitboxes that can clash the enemy and alter the weapon's trajectory such that it is more likely to hit the enemy and scale the damage up.
+
+- Slice, Damage Up
+- Slice, Clash Up
+- Chop, Damage Up
+- Chop, Clash Up
+- Thrust, Damage Up
+- Thrust, Clash Up
+
+#### Weapon Attributes
+Weapons have a base Inertia (IA) stat, as do each attack. These combine with the player's IA and the armor IA to determine the end-lag of an action, how much of it is cancellable, and how much Directional Influence (DI) can be used during the action. Swing speed is mostly controlled by the remaining EG, and elemental damage is not currently planned for the game.
+
+### Combat Flow and Resource Management (EG, SB, and LF)
+#### Combat Flow
+The Energy (EG) stat serves as a limiting factor for actions in combat. As the EG decreases, the execution speed of actions becomes slower. At 0 EG, actions will be too slow to effectively perform any moves. This system encourages players to manage their EG carefully during combat.
+In order to provide precieved responsiveness, the animation for an attack will start with sudden and significant posture change to signify the start of the action. Also, the amount that the action is slowed down will not be linear with the amount of remaining EG, but will start out at a gradual level and increase more and more suddenly as the player gets beneath 50% EG. This will make it feel like the player is still able to perform actions at a reasonable speed until they are almost out of EG, at which point they will be unable to perform actions at all. EG is restored passively over time (when the player is not performing EG-consuming actions), and can be instantly replenished in a few ways: leveling up the Energy stat (with an Essence Chunk), or casting a spell that restores EG (at a poor exchange rate), or casting a martial art that buffs the user's EG regeneration rate for a period of time. This gives the spell caster a sprinter-like feel for immediate reward on their EG restoration, and the Martial Artist a marathon-like feel for their longer-timer and more efficient approach to EG Restoration; The wizard rushes in, the martial artist plans ahead.
+
+Stability (SB) is reduced when blocking, ensuring that players cannot spam blocks and must balance their offense and defense. The system is influenced by the shield mechanic in Super Smash Bros.
+
+#### Resource Management
+Players need to manage various resources during combat, such as Life Force (LF), Energy (EG), and Stability (SB). Life Force (LF) is a measure of a player's magical energy and is depleted when a player uses abilities. It can be restored by killing enemies or using consumable potions.
+
+### Snap-to-Target and Directional Influence (DI)
+#### Snap-to-Target
+There is no snap-to-target mechanic in this game. Instead, players must manually space and time their attacks to hit enemies. This is a deliberate design choice to make combat more skill-based and tense.
+
+#### Directional Influence (DI) and Animation Phases
+Directional Influence (DI) allows players to influence the trajectory of their evasive maneuvers, attacks, and other actions while they are in motion. The amount of DI possible during an action is determined by the character's Inertia (IA) stat, the weapon's base IA stat, and the IA stat of the specific attack. Animation phases determine the start-up, active, and end-lag of an action.
+
+Character builds with low inertia values have more directional influence available during their actions. This allows them to more easily change the direction of their actions while they are in motion, and to more quickly cancel their end-of-action follow-throughs. The goal is to provide players a nimble build that is able to quickly change direction and cancel actions, but is also vulnerable to being interrupted during actions and deals less damage.
+
+Character builds with high inertia values have less directional influence available during their actions. This makes it more difficult, or impossible, for them to change the direction of their actions while they are in motion, and to cancel their end-of-action follow-throughs. The goal is to provide players a build that is able to deal more damage, but is also less nimble and more vulnerable to being interrupted during actions.
+
+### Stats Points: HP, LF, EG, SB, IA, ES, and MF
+The game features various stats that the player can allocate Essence (ES) points to (see Characters). A large amount of ES is available at the start of the game, and the player can allocate it to any stat they wish. Additionally, a player can gain more ES by trading in key items to the Essence Trader. These items include: unused Tomes, Manuscripts, and keys.
+
+
+### Input Buffering
+Input buffering is a nuanced technique that allows a player to smoothly chain actions together, providing a more responsive and satisfying combat experience. The efficiency of this technique depends on the player's timing. The closer to the end of a current action the next action is buffered, the more efficient the resulting action will be.
+
+To initiate input buffering, players simply input their next desired action during an ongoing action. The timing of this input in relation to the end of the current action determines the level of buffering success. The closer to the completion of the current action the input is made, the higher the buffering success level. Buffering success is categorized into tiers that determine both the speed and efficiency of the subsequent action (by avoiding additional buffer-lag frames).
+
+1. Success Level 0-50%: The reward (speed and efficiency of the buffered action) is greater than the success level.
+2. Success Level 50-80%: The reward is equal to the success level.
+3. Success Level 80-90%: The reward is 80%.
+4. Success Level 90-100%: The reward is 90%.
+5. Success Level 100%: The reward is 100%.
+
+Unlike a standard input sequence which may result in slower, disjointed actions, input buffering offers a dynamic and rewarding combat option that scales with player skill and timing. The system is designed to encourage both new and experienced players to engage with the mechanic, with its value and effectiveness growing as they hone their timing and coordination. It provides a more fluid and intuitive combat experience, creating a rhythm that players can master and exploit to their advantage.
+
+Only a single input is buffered. Additional inputs overwrite. The first buffered input With first buffered input essentially 'locks in' the timing window, and subsequent buffered inputs just replace the actual action being prepared. This system could indeed add a layer of complexity and strategic decision-making to the combat, as players will need to be mindful not only about when they're inputting a command, but also which command they're inputting first.
+
+## Death and Consequences
+In Castle of the Damned, death is not the end but a gateway to corruption and increased peril. As the player battles the darkness within the castle, the weight of each death becomes apparent as they face the consequences of their actions.
+
+### The Castle's Power and Corruption:
+The Castle of the Damned, a once-mighty fortress, holds a deep connection with the protagonist. When the player falls in battle, the castle, overwhelmed by its own longing for purification, uses its remaining power to bring the player back to life. However, this power comes at a cost – it corrupts the player's soul and body, staining them with its malevolence.
+
+### Corruption Mechanics:
+Upon resurrection after death, the player character is brought back to life in a corrupted state, with their health points (HP) and focus points (FP) fully restored. However, this corruption is not benign and the player will begin to experience a decay in their maximum HP and FP over time. 
+
+Dying while corrupted causes a permanent reduction of the player's maximum HP and FP, depending on how long they survived while corrupted.
+
+The decay in the player's maximum HP and FP due to corruption does not continue indefinitely. Instead, it would stop at a certain threshold, let's say 50% of the player's maximum HP and FP for example. This means that even if the player is corrupted for an extended period of time, they won't be reduced to an unplayable state.
+
+It is designed to give the player strategic choices after death: the faster they proceed to be cleansed the more health they have but the more recklessly they are playing; the slower they proceed to be cleansed the less health they have but the more carefully they are playing.
+To prevent players from exploiting a loophole -- dying immediately once corrupted, and thereby locking in only a very small permanent debuff to their maximum HP and FP -- while their maximum HP and LF decays while corrupted, their locked-in debuff starts at the maximum and _decreases_ over time. The longer you survive, the less permanent debuff you have if you die while corrupted but the less maximum HP and LF you have while corrupted.
+
+To illustrate, let's say the player's HP/LF starts decaying from 100% when they first get corrupted. The potential permanent loss if they were to die again immediately is also 100%. However, as time passes, while their current HP/LF decreases, the potential permanent loss also decreases. After a while, their HP/LF may be at 50%. If they were to die at this point the permanent loss may only be 20% (or some other lower percentage).
+
+The player must weigh the increasing immediate danger of having lower HP/LF against the decreasing long-term danger of locking in a permanent loss. If they can survive longer, they can secure a more favorable long-term outcome, but doing so will be progressively more difficult as their HP/LF keeps decreasing.
+
+The debuff amount has a minimum, beyond which it will not be reduced by increasing time-survived. To completely avoid the permanent debuff, the player must cleanse themselves before dying.
+
+### Permanent Corruption:
+Dying without cleansing the corruption will result in the debuff becoming permanent. The player must confront the looming threat of losing their full potential if they fail to find a way to purify themselves.
+
+### Restoring:
+The restoration system gives players a lifeline, allowing them to undo some of the damage caused by corruption. Consumable, rare items can be used to restore a percentage of the max HP/LF lost due to corruption. The effectiveness of these items is limited by diminishing returns, for example: the first item restores 100% of the lost max HP/LF, the second item restores 90%, the third item restores 85%, and so on. 
+The player also has access to a single consumable item that can restore all of the lost max HP/LF, but there is only 1 in each playthrough and they begin the game with it.
+Note that restoration items have no effect on the permanent corruption debuff, and do not cleanse the player of corruption. They only restore lost max HP/LF. The decay will continue if the player does not cleanse themselves.
+
+### Cleansing:
+To rid themselves of the corruption, the player must seek out a special relic hidden within the castle's treacherous halls. This relic, infused with the remnants of the castle's original purity, holds the power to cleanse the player's soul and body, freeing them from the grips of corruption. The location of this relic is not fixed but randomly scattered throughout the castle, creating an element of exploration and discovery.
+
+### Changing Castle Layout:
+As the player delves deeper into the Castle of the Damned, the very structure of the fortress responds to their presence. Doors once locked may swing open, new passages may reveal themselves, and previously safe areas may become perilous. The castle's layout evolves and adapts, challenging the player to navigate through its ever-changing corridors and chambers.
+
+### Invisible Stalkers:
+Within the castle's shadowed depths lurk invisible creatures, ethereal and feline. In their unseen state, they remain dormant and unaware of the player's presence. However, once the player succumbs to corruption, the invisible stalker are drawn to their tainted essence. If a stalker comes into contact with the player's corruption it is revealed, and undergoes a transformation into a very dangerous foe. These formidable adversaries relentlessly pursue the corrupted player, presenting a constant threat that requires vigilance and strategy to evade.
+
+## Dynamic N-Enemy System
+
+### Concept
+A fixed number (N) of enemies are always present in the game world. When one is defeated, it respawns in a different location, keeping the total number constant. Cleared rooms become no-respawn zones until the player's death, concentrating danger in unexplored areas.
+
+### Features
+- **Persistent Threat**: Maintains a constant level of challenge by ensuring a fixed number of enemies in the world.
+- **Strategic Clearing**: Encourages strategic decisions about when to clear rooms, based on the player's current needs and the potential risks of future encounters.
+- **No-Respawn Zones**: Provides temporary safe havens, rewarding thorough exploration and combat.
+
+## Enemy-Density Cap
+
+### Concept
+Each room has a maximum enemy-density limit to prevent overcrowding. Different enemies contribute differently to the room's density cap.
+
+### Features
+- **Balanced Encounters**: Ensures that no single room becomes overly difficult due to excessive enemy spawns.
+- **Dynamic Difficulty**: Adjusts the game's challenge based on the player's actions and the current state of the game world.
+
+## Vengeance System
+
+### Concept
+A hidden "vengeance" meter for each enemy type increases with every defeat of that enemy. As the meter rises, newly spawned enemies of that type become tougher, scaling in difficulty until a reset condition is met.
+
+### Features
+- **Adaptive Difficulty**: Enemies adapt to the player's actions, becoming tougher the more they are defeated, adding depth to combat strategies.
+- **Rewarding Skill**: Defeating tougher enemies yields better rewards, encouraging players to engage with the system and refine their combat skills.
+- **Strategic Management**: Players can influence the difficulty of their game by managing which enemies they choose to engage with, adding a layer of strategy to exploration and combat.
+
+### Implementation
+- **Subtle Indicators**: While the system is hidden, subtle clues such as changes in enemy appearance or behavior hint at the increasing difficulty.
+- **Reset Mechanisms**: The vengeance meter can be reset through specific player actions or events, allowing for strategic planning and relief from escalating challenges.
+
+## Healing
+### Nuts & Invisible Stalkers
+In the Castle of the Damned, healing is an art of survival and strategy, much like everything else. One primary method of healing involves the curious beings known as Invisible Stalkers and the nuts scattered throughout the castle.
+
+Nuts can be found in various nooks and crannies of the castle, often tucked away in less-traveled paths. Although relatively common, players are limited in how many they can carry at a time. To use them for healing, players must crack the nuts and place them on the ground. This attracts an Invisible Stalker over time, creating an aura of healing energy that gradually restores the player's HP and LF.
+
+This method, however, cannot be used effectively in combat due to the delay before the Stalker arrives. Furthermore, when a player is corrupted, if the invisible stalker is lured to the player it will transform and become a vicious foe. This is an additional debuff to players who are corrupted.
+
+### Ginger
+For immediate healing, players will need to use the ginger spice. The common but not overly abundant spice that provides a modest amount of instant HP recovery when consumed directly. It's quicker to use than Nuts, but the amount of HP restored is not as significant. The trade-off being its relative abundance in the castle. When used in conjunction with the Spice Box, Ginger provides a substantial amount of HP recovery over a period of time.
+
+### Essence Fountains
+Scattered throughout the castle are Essence Fountains. These fountains serve as healing sources for the player. When you find one, you can interact with it to restore a significant portion of your HP. Each Essence Fountain has a limited number of uses, let's say three for instance. The uses can be charged into Arcane Paper, and are restored to the Fountain upon player death.
+
+## Inventory & Equipment
+### Weapon Slots
+Each player has one weapon slot available per hand, providing opportunities for diverse combat approaches. The right-hand slot can be equipped with a weapon, allowing for various forms of physical attack.
+
+The left-hand slot is more versatile, and can be equipped with either a spell caster or a martial art caster. A spell caster allows the player to use magical attacks from tomes they've consumed and a martial art caster enables martial arts learned from manuscripts. Your choices here will determine your combat style, allowing for a mix of physical and magical/martial attacks, or a focus on either offense or defense.
+
+### Item Slots
+In addition to weapon slots, each hand also has four item slots. These slots can be equipped with any items the player has collected, such as keys, a spice, Arcane Paper, Spice Box, and more.
+
+This inventory system encourages strategic preparation. Before heading into battle or exploring the castle, you'll need to choose which items to equip based on the challenges you anticipate facing. Whether you prioritize survival, combat readiness, or versatility, the items you equip can tip the balance in your favor.
+
+Your journey through the Castle of the Damned is as much about strategic planning and adaptation as it is about skillful combat. Choose wisely, and let your journey shape you, just as you shape the castle.
+
+### Spices, The Spice Box, and Spice Trading
+
+Throughout the exploration of the castle, players will encounter various spices - Ginger, Caraway, Nutmeg, Cinnamon, Chamomile, Pepper, Cardamom, and Saffron. Each of these spices, when consumed directly, confers a basic effect:
+
+- Ginger: Restores a small amount of HP instantly.
+- Caraway: Restores a small amount of LF instantly.
+- Nutmeg: Enables friendly-fire among enemies for some time.
+- Cinnamon: Increases the width of your weapon's hitbox.
+- Chamomile: Cleanses corruption.
+- Pepper: Boosts pulse recovery rate.
+- Cardamom: Shrinks the player's hurtbox.
+- Saffron: Allows lock-on to enemies for a short time.
+- Turmeric: Temporarily reveals the pulse waveform of enemies. This visualization allows players to see when the enemy pulse is at its peak or trough, enabling them to time their attacks to coincide with these critical moments for maximum damage or effects.
+
+As the player progresses through the game, they will eventually discover the Spice Box, an ancient relic that enhances the properties of these spices. The Spice Box starts with only one slot, but the player can find the other two by exploring the castle.
+
+When a spice is placed in the Spice Box, it gains an enhanced effect (see consumable items).
+
+These enhanced effects only apply when the Spice Box is activated, consuming a charge of the Spice Box.
+
+The total potency of the Spice Box is limited to 20, so players will have to strategically choose which spices to maximize. For example, a player could fill all three slots with high-potency spices but would not be able to reach the maximum potency for any single spice.
+
+Finally, collecting multiple instances of the same spice allows you to increase its potency when placed in the Spice Box. For example, if you put ten instances of Cinnamon into one slot of the Spice Box, the effects related to the hitbox of your weapon would be highly potent. This gives an ongoing incentive to find more spices, even after obtaining the Spice Box. 
+
+#### Spice Trading and Replenishment System
+
+##### Goal
+The spice trading system aims to empower players to create unique builds around consumable items, allowing a wide range of strategic gameplay. It provides a way to trade, replenish, and manage spices that enhances both the combat and exploration aspects of the game.
+
+##### Spice Trade Item & Upgrades
+The player will obtain a spice-trader device early in the game, and it's the cornerstone of this system. The spice-trader can be upgraded in two main ways:
+- **More Slots**: Increase the number of slots available for auto-replenishing spices after death.
+- **Better Slots**: Improve the quality of existing slots, enabling them to hold and replenish higher-tier spices.
+
+Upgrades can be found or earned through gameplay, encouraging exploration and progression.
+
+##### Trading Spices
+Players can trade spices through the spice-trader. The trade ratios between different spices are predefined and can be influenced by the rarity and utility of each spice. Chamomile is an exception and is prohibitively expensive to trade for, preserving its rarity and unique properties.
+
+##### Dynamic Drop Rates & Baseline Spices
+To further ensure that players have access to a variety of spices, dynamic drop rates are employed to favor spices that are currently low in the player's inventory. Chamomile is exempt from this, maintaining its rare status.
+
+Upon death, the player's spices will be replenished to a baseline level, determined by the current slots and their quality in the spice-trader. Again, Chamomile is the exception and does not replenish automatically.
+
+##### Limitations
+- Chamomile is a unique spice that cannot be replenished automatically after death, and its trading cost is extremely high. It may also be exempt from dynamic drop rates.
+- The spice-trader's highest tier of slots is still not enough to allot Chamomile, ensuring that this spice remains a valuable and carefully considered resource.
+
+##### Strategic Implications
+The system allows for varied gameplay styles, whether focusing on common spices in large quantities or rarer spices for specialized strategies. The constraints on Chamomile add an additional layer of decision-making and strategy.
+
+## Consumables
+- **Key** :: Unlocks doors locked by the pathing system, adding a strategic decision-making element for players when choosing to spend it on unlocking doors or trading for ethereal essences.
+- **Ethereal Essence** :: A consumable item that restores the player's HP when used. These are scarce and can be obtained through enemy drops, scaling in scarcity based on difficulty and game progression. Additionally, they can be purchased by trading keys, the Lantern, or spell tomes, encouraging players to weigh their options carefully before making a trade.
+- **Spell Tomes** :: A consumable item. When a player consumes a Spell Tome, they permanently learn the corresponding spell. Consuming a Tome allows the player to reallocate their Essence, and it costs some MF to consume. Can be sold to an NPC to increase the player's Essence, with diminishing returns.
+- **Martial Manuscripts** :: A consumable item. When a player consumes a Martial Manuscript, they permanently learn the corresponding martial-art. Consuming a Manuscript allows the player to reallocate their Essence, and it costs some MF to consume. Can be sold to an NPC to increase the player's Essence, with diminishing returns.
+- **Fabric Scraps** :: An item that gives the user access to an altered version of either Chop, Slice, or Thrust attacks. The altered version must be attuned in place of the current version. Once found, the version provided by the scrap can be changed as many times as desired. Found hidden throughout the castle.
+- **Nuts** :: A consumeable item. Players can only carry a limited number of Nuts at a time. They are consumed to be spread on the ground to attract the invisible stalkers, in order for the (non-corrupted) player to heal while in their aura. Nuts are relatively common. While the stalkers are swift to appear, healing in their aura is slow and the aura is relatively small. This makes it difficult to use mid-combat, but useful for healing outside combat.
+- **Essence Chunks** :: A consumable item. When a player consumes an Essence Chunk, they permanently increase a stat of their choice. They can pre-allocated to increase a particular stat: Hit Points (HP), Life Force (LF), Energy (EG), Stability (SB), or Inertia (IA). This is visually indicated by the ES Chunk glowing a distinct colour corresponding to the chosen stat, allowing players to identify their allocation at a glance during combat. If no pre-allocation has been made, holding down the consume button will bring up a wheel interface, prompting the player to select a stat. When an ES Chunk is consumed, it permanently increases the selected stat and also provides a temporary boost related to that stat. The pre-selection is done via Arcane Paper (maybe).
+- **Allspice** :: A spice. Boosts AoE (Area of Effect) abilities or spells for a short duration. When used in the Spice Box, increases the radius of AoE effects.
+- **Caraway** :: A spice. Restores a small amount of LF instantly. When used in the Spice Box, greatly increases LF recovery from downed foes.
+- **Cardamom** :: A spice. Shrinks the player's hurtbox. When used in the Spice Box, adds super armour to the player.
+- **Chamomile** :: A spice. Cleanses corruption. When used in the Spice Box, passively increases Spice Box charge speed (cannot be used).
+- **Cinnamon** :: A spice. Increases the width of your weapon's hitbox. When used in the Spice Box, increases the active frames of your weapon's hitbox.
+- **Ginger** :: A spice. Restores a small amount of HP instantly. When used in the Spice Box, restores a large amount of HP over time.
+- **Malangal** :: A spice. Can only be found when corrupted. You lose X HP immediately, and gain a corruption aura that does damage over time to any enemies in it, where the total potential damage is greater than X. When used in the Spice Box it increases your item discovery. Consumed while corrupted, it fully restores your HP and LF, but increases the total penalty for dying while corrupted.
+- **Nutmeg** :: A spice. Enables friendly-fire among enemies for some time. When used in the Spice Box, makes enemies attack each other for some time.
+- **Paprika** :: A spice that manipulates the force and impact of your attacks. Immediate Use: Reduces the knockback of your attacks but increases their damage for a short duration. Ideal for keeping enemies close and enhancing your offensive capabilities. Use with Spice Box: Increases the knockback of your attacks but reduces their damage for a duration. Adds a bit of knockback to enemies as they enter AoE attacks, such as Malangal. Great for controlling the battlefield and creating space, especially when dealing with groups of enemies.
+- **Pepper** :: A spice. Boosts pulse recovery rate. When used in the Spice Box, Increases max pulse. With multiple slots dedicated it greatly increases max pulse. After the effect ends the player's max pulse is greatly reduced for some time. It should have the feeling that you must get the job done before the effect ends, or else certain death.
+- **Turmeric** :: A spice. Provides auditory clues, such as hearing enemies movements, or faint sounds from a nearby cleansing fountain. When used in the Spice Box, allows the player to see enemy pulses.
+
+
+## Equipment
+Equipment can further allow player's to customize their build. Players can equip a weapon in their right-hand, and any of the following in their left: a lantern, a main-gauche, a spell-casting catalyst, or a martial-arte catalyst. Players can also equip a helmet, a chest piece, and leggings.
+
+Weapons and equipment have inertia (IA) associated with them. In general, the heavier and better the weapon or equipment the more inertia. This means that the player will have more end-lag, less cancellable frames, less DI, and but more super-armor when using heavier weapons and equipment. This is balanced by the fact that heavier weapons and equipment generally have higher damage and defense.
+
+Combining weapons and equipment for different playstyles is a core mechanic of the game. For example, a player could equip a heavy weapon and heavy armor for a tanky build, or a light weapon and light armor for a fast build, or a heavy weapon and light armor for a balanced build. However, more bespoke combinations are possible, such as a light weapon and heavy armor for a tanky build with fast attacks, or a heavy weapon and light armor for a fast build with heavy attacks.
+
+Some items have special effects. The lantern which provides light in dark areas, and reveals invisible items and invisible stalkers; The spell-casting catalyst allows the player to cast spells; The martial-arte catalyst allows the player to use martial artes.
+
+### Non-weapons
+- **Lantern** :: Provides light in poorly-lit areas, allowing players to see obstacles and enemies more clearly. When equipped, the Lantern takes the place of the left-hand equipment, forcing players to choose between visibility and other options. The game has items strewn throughout, in hidden locations, like Dark Souls. They are invisible to the naked eye, and visible when using the lantern (visible as glowing spots like in Dark Souls). To aid the player in discovery, they also have a sound they play, with directional sound. And, finally, there is an enemy type that is also invisible until the lantern is equipped and they only become aggressive when the lantern is lit, and they make very similar sound (though distinct) to the hidden items.
+- **Spice Box** :: A magical artifact has slots for up to three spices at any given time. Players can find various spices throughout the castle and equip them in the Spice Box. Each spice grants the player a unique, temporary ability when used. However, using a spice within the box doesn't consume it. Instead, it exhausts the charge, starting a cooldown period during which the spice can't be used again until it fully recharges. The potency of each spice can be adjusted: higher potency yields stronger effects but shorter durations and longer recharge times. Initially only 1 slot is available. A second and third slot can be found.
+- **Spice Trader** :: A magical artifact that allows the player to trade spices for other spices, and allows the player to allot a baseline value of certain spices to be replenished after death. Can be upgraded to increase the number of spaces that can be alloted for replenishment, and separately to increase the max power level of the spices that can be alloted for replenishment. Chamomile is never achievable as a replenishment spice.
+- **Arcane Paper** :: A resuable item. Arcane paper can be prepared with an action to be unleashed later instantly. They are utility items and must be equipped to one of the player's utility slots (3 per hand). Preparation of the Arcane Paper is a process that takes time and can't be done quickly. Therefore, it's recommended to prepare them ahead of combat situations. There are an extremely limited amount of Arcane Paper in the game (maybe 3). After the prepared action has been used, the paper can be reloaded. Example uses: spell, martial-art, heavy attack (works as a counter attack as well), fire bomb (by charging paper over fire), a slow but long-distance dodge, Essence Chunk allocation, health recovery (by charging on Essence Fountains), etc. The primary benefit of Arcane Paper is instantly executing an otherwise slow action.
+
+### Weapons
+- **Alexandria Long Sword**  [S, D, R] => Great speed, decent damage, less range
+- **Axe**                    [S, D, R] => Great speed, decent damage, less range
+- **Bastard Sword**          [D, R, S] => Great damage, decent range, slower speed
+- **Hand-and-a-Half Sword**  [R, S, D] => Great range, decent speed, less damage
+- **Kilij**                  [D, S, R] => Great damage, decent speed, less range
+- **Talwar**                 [R, D, S] => Great range, decent damage, slower speed
+- **Falcata**                [S, R, D] => Great speed, decent range, less damage
+- **Spada da Stocco**        [D, S, R] => Great damage, decent speed, less range
+- **Battle Axe**             [D, R, S] => Great damage, decent range, slower speed
+- **Rapier**                 [S, R, D] => Great speed, decent range, less damage
+- **Estoc**                  [R, S, D] => Great range, decent speed, less damage
+- **Great Axe**              [R, D, S] => Great range, decent damage, slower speed
+
+#### Details
+### Rapiers
+Best at thrust, decent at slice, and only OK at chop, these are fast weapons that rely on DI to get on target. Their damage output is spread over multiple hits, with low IA and thus low-to-no super armor. This design gives rapiers a high skill ceiling, rewarding precision and timing. The weak chopping power might be a disadvantage against heavily armored opponents, adding an extra layer of tactical decision-making.
+
+- Spada da Stocco: a 1 handed sword with a shorter, thin-yet-wide blade. Has edges, and a slightly wider blade than other rapiers.
+- Rapier: a 1 handed sword with a long, thin blade. It is very light. Has edges.
+- Estoc: a 1 handed sword with a long blade, longer than rapier. It is very light. Has no edges (bad at slicing).
+
+### Scimitars
+Scimitars excel at slicing, decent at both thrusts and chops. Slices are easier to aim, easier to clash, and easier to use. But as a balance, they do less damage than thrusts and chops. The wide arcing swing of scimitars also makes them excellent for clashing. Overall, scimitars provide a balanced experience, with a lean towards aggressive and bold playstyles.
+
+- Falcata: a 1 handed sword with short length and a curved blade. It curves inward, like a sickle.
+- Kilij: a 1 handed sword with medium length, shorter than the talwar, and a curved blade. It curves outward. Lighter than the talwar.
+- Talwar: a 1 handed sword with medium length and a curved blade. It curves outward. Longer and heavier than the kilij.
+
+### Axes
+Axes are best at chops, decent at slices, poor at thrusts. They are the 'heavy hitters', dealing massive damage in one fell swoop but at a slower rate. Higher IA and more super armor make them ideal for trading blows with the enemy. The low speed and poor thrusting ability force the player to focus on positioning and timing, adding a unique tactical layer when using these weapons.
+
+- Axe: a 1 handed axe with a short handle and a short blade. It is very light.
+- Battle Axe: a 1 handed axe with a medium handle and a medium blade. It is heavy.
+- Great Axe: a 1 handed axe with a long handle and a long blade. It is very heavy.
+
+### Swords
+Swords are decent-minus at all things but good at none. This might initially seem like a disadvantage, but the absence of major downsides gives the player a consistent, reliable tool for all situations. Swords are the jack-of-all-trades, and while they may not excel in any one area, their balanced nature allows the player to adapt to a wide array of scenarios.
+
+- Bastard Sword: a 1.5 handed sword with a long blade without much tapering. Heavy for it's length.
+- Hand-and-a-Half Sword: a 1.5 handed sword with a longer blade than the Bastard Sword, but with more tapering. Lighter for it's length.
+- Alexandria Long Sword: a 1 handed sword with a medium length and extra wide blade. Heavy for it's length.
+
+##### Stats
+Swords are **decent (worse than ok, better than bad)** at all three moves (thrust, slice, chop).
+Scimitars are best at slicing, ok at chopping, and bad at thrusting.
+Rapiers are best at thrusting, ok at slicing, and bad at chopping.
+Axes are best at chopping, ok at slicing, and bad at thrusting.
+
+- Alexandria Long Sword:    L. 111 cm;      L. of blade 86.7 cm;    W. 31.4 cm; Wt. 1644.0 g
+- Hand-and-a-Half Sword:    L. 123 cm;      L. of blade 93.7 cm;    W. 25.4 cm; Wt. 1616.0 g
+- Bastard Sword:            L. 120 cm;      L. of blade 95.3 cm;    W. 25.4 cm; Wt. 1700.0 g
+
+- Falcata:                  L. 53.2 cm;     L. of blade 43.2 cm;    W.  6.7 cm;  Wt.  473.4 g
+- Kilij:                    L. 90.2 cm;     L. of blade 78.2 cm;    W. 13.3 cm;  Wt.  688.9 g
+- Talwar:                   L. 93.0 cm;     L. of blade 80.3 cm;    W. 15.0 cm;  Wt. 1220.0 g
+
+- Spada da Stocco:          L. 113.0 cm;    L. of blade  95.8 cm;    W.  24.1 cm;  Wt. 1332.4 g
+- Rapier:                   L. 116.2 cm;    L. of blade 104.8 cm;    W.  30.5 cm;  Wt. 1048.9 g
+- Estoc:                    L. 122.2 cm;    L. of blade 106.9 cm;    W.  27.3 cm;  Wt. 1615.9 g
+
+- Axe:                     L.  57.2 cm;    L. of blade  ????? cm;    W.  14.0 cm;  Wt.  929.9 g
+- Battle Axe:              L.  72.3 cm;    L. of blade  26.0  cm;    W.  23.5 cm;  Wt.  1341  g
+- Great Axe:               L.  113.0 cm;   L. of blade  ????? cm;    W.  30.5 cm;  Wt.  2863  g
